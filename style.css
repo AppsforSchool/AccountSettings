@@ -1,0 +1,500 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  font-size: 16px;
+}
+body {
+  font-family: "BIZ UDGothic", sans-serif;
+  background-color: #f0f2f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+.mini-text {
+  font-size: 80%;
+}
+.hidden {
+  display: none;
+}
+
+.modal {
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal.hidden {
+  display: none;
+}
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 10px;
+  position: relative;
+  
+  text-align: center;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.modal-content .title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  /*margin-bottom: 2rem;*/
+}
+.modal-content .close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+  background-color: #eee;
+  
+  width: 3rem;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  text-align: center;
+}
+.modal-content .close-button:hover,
+.modal-content .close-button:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+.modal-content input {
+  font-family: "BIZ UDGothic", sans-serif;
+  font-weight: 700;
+  font-size: 1.0rem;
+  
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 0.8rem;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.modal-content input:hover {
+  border-color: #999;
+}
+.modal-content input:focus {
+  border-color: #E58339;
+  box-shadow: 0 0 0 4px rgba(229, 131, 57, 0.25);
+  outline: none;
+}
+.modal-content button {
+  font-family: "BIZ UDGothic", sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  
+  width: 100%;
+  padding: 0.6rem 20px;
+  margin-left: 0;
+  margin-right: 0;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+
+  background-color: #E58339;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(229, 131, 57, 0.25);
+
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
+}
+.modal-content button:disabled {
+  background-color: #ccc;
+  box-shadow: none;
+}
+.modal-content .message {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+#header-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+#user-data {
+  display: flex;
+  align-items: center;
+}
+#user-data.hidden {
+  display: none;
+}
+#header-username {
+  font-weight: 700;
+}
+#header-logout {
+  font-family: "BIZ UDGothic", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  
+  padding: 0.3rem;
+  margin: 0 0 0 0.8rem;
+  text-align: center;
+  cursor: pointer;
+  display: block;
+  box-sizing: border-box;
+
+  background-color: #E58339;
+  color: #fff;
+  border: none;
+  border-radius: 0.3rem;
+  box-shadow: 0 4px 8px rgba(229, 131, 57, 0.25);
+}
+
+#news-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 1rem 30px;
+  background-color: #fffbf5;
+  /*border: solid 2px #e58339;*/
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+#news-title {
+  color: #e58339;
+  font-weight: 700;
+  font-size: 1.3rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 2px solid #f0c9a7;
+}
+#news-container a {
+  font-weight: 700;
+  color: #e58339;
+}
+#news-container a:visited {
+  color: #a05e2d;
+}
+#index-list-container {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+#index-list-container a {
+  padding-bottom: 0.5rem;
+}
+#news-link {
+  padding-top: 1rem;
+}
+
+#login-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+#login-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#login-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.login-subtitle {
+  font-size: 0.8rem;
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #ddd;
+}
+#to-pc {
+    display: block;
+}
+#to-sp {
+  display: none;
+}
+#forgot-password-link {
+  display: none;
+  font-weight: 700;
+  font-size: 0.8rem;
+  
+  color: #E58339;
+}
+
+#mail-address,
+#password {
+  font-family: "BIZ UDGothic", sans-serif;
+  font-weight: 700;
+  font-size: 1.0rem;
+  
+  width: 100%;
+  max-width: 300px;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+#mail-address:hover,
+#password:hover {
+  border-color: #999;
+}
+#mail-address:focus,
+#password:focus {
+  border-color: #E58339;
+  box-shadow: 0 0 0 4px rgba(229, 131, 57, 0.25);
+  outline: none;
+}
+#mail-address::placeholder,
+#password::placeholder {
+  color: #999;
+  opacity: 1;
+  font-weight: 700;
+}
+
+#login-button {
+  font-family: "BIZ UDGothic", sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  
+  width: 100%;
+  max-width: 300px;
+  padding: 12px 20px;
+  margin: 20px 0 10px 0;
+  text-align: center;
+  cursor: pointer;
+  display: block;
+  box-sizing: border-box;
+
+  background-color: #E58339;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(229, 131, 57, 0.25);
+
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
+}
+#login-button:disabled {
+  background-color: #ccc;
+  box-shadow: none;
+}
+
+#error-message {
+  font-size: 0.8rem;
+  color: red;
+}
+
+
+#setting-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+#setting-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #ddd;
+}
+#setting-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#setting-status {
+  width: 95%;
+  text-align: left;
+  margin-bottom: 2rem;
+}
+#setting-status p {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+#setting-status p.mini-text {
+  font-size: 80%;
+}
+#setting-status p span {
+  font-weight: 700;
+}
+#setting-content button {
+  font-family: "BIZ UDGothic", sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  
+  width: 95%;
+  padding: 0.8rem;
+  margin-bottom: 1.2rem;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+
+  background-color: #E58339;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(229, 131, 57, 0.25);
+
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
+}
+#setting-content button:last-child {
+  margin-bottom: 0;
+}
+
+#uid-area {
+  display: flex;
+}
+#uid-copy-button {
+  font-family: "BIZ UDGothic", sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  
+  padding: 0.3rem;
+  margin: 0 0 0 0.8rem;
+  text-align: center;
+  cursor: pointer;
+  display: block;
+  box-sizing: border-box;
+
+  background-color: #E58339;
+  color: #fff;
+  border: none;
+  border-radius: 0.3rem;
+  box-shadow: 0 4px 8px rgba(229, 131, 57, 0.25);
+}
+/*
+.setting-section {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.setting-section:last-child {
+  margin-bottom: 0;
+}
+
+.setting-section .title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #E58339;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+.setting-section div {
+  display: flex;
+  justify-content: center;
+}
+.setting-section input {
+  font-family: "BIZ UDGothic", sans-serif;
+  font-weight: 700;
+  font-size: 1.0rem;
+  
+  width: 95%;
+  max-width: 600px;
+  padding: 0.6rem;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.setting-section input:hover {
+  border-color: #999;
+}
+.setting-section input:focus {
+  border-color: #E58339;
+  box-shadow: 0 0 0 4px rgba(229, 131, 57, 0.25);
+  outline: none;
+}
+.setting-section input::placeholder {
+  color: #999;
+  opacity: 1;
+  font-weight: 700;
+}
+.setting-section button {
+  font-family: "BIZ UDGothic", sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  
+  width: 95%;
+  max-width: 180px;
+  padding: 0.6rem 20px;
+  margin-left: 1rem;
+  margin-right: 0;
+  text-align: center;
+  cursor: pointer;
+  box-sizing: border-box;
+
+  background-color: #E58339;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(229, 131, 57, 0.25);
+
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
+}
+*/
+
+@media (max-width: 600px) {
+  .game-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+  #user-data {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  #header-logout {
+    margin: 0;
+  }
+  
+  #to-pc {
+    display: none;
+  }
+  #to-sp {
+    display: block;
+  }
+  
+  /* after login */
+  .setting-section div {
+    flex-direction: column;
+    align-items: center;
+  }
+  .setting-section input {
+    margin: 0;
+    max-width: none;
+  }
+  .setting-section button {
+    margin-left: 0;
+    margin-top: 0.6rem;
+    max-width: none;
+  }
+}

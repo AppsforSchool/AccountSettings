@@ -1,0 +1,106 @@
+<html lang="ja">
+  
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>アカウント設定</title>
+  <meta name="apple-mobile-web-app-capable" content="yes"> 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDGothic:wght@400;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+
+</head>
+  
+<body>
+  <header class="game-header">
+    <p id="header-title">AppsforSchool アカウント設定</p>
+    <div id="user-data" class="hidden">
+      <p id="header-username">取得中...</p>
+      <button id="header-logout">ログアウト</button>
+    </div>
+  </header>
+  
+  <div id="username-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="title">ユーザーネーム変更</p>
+        <span id="username-modal-close" class="close-button">&times;</span>
+      </div>
+      <input type="text" id="username-modal-input" placeholder="新しい名前">
+      <button id="save-username-button" disabled="true">名前を変更</button>
+      <p id="username-modal-message" class="message"></p>
+  </div>
+  </div>
+  <div id="password-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="title">パスワード変更</p>
+        <span id="password-modal-close" class="close-button">&times;</span>
+      </div>
+      <input type="password" id="password-modal-current" placeholder="現在のパスワード">
+      <input type="password" id="password-modal-new" placeholder="新しいパスワード">
+      <input type="password" id="password-modal-confirm" placeholder="新しいパスワード(確認用)">
+      
+      <button id="save-password-button" disabled="true">パスワードを変更</button>
+      <p id="password-modal-message" class="message"></p>
+  </div>
+  </div>
+  
+  <main>
+    <div id="news-container">
+      <p id="news-title">お知らせ</p>
+      <ul id="index-list-container">
+        <li>取得中...</li>
+      </ul>
+      <p id="news-link"><a href="news.html">お知らせ一覧を見る</a></p>
+    </div>
+    <div id="login-container" class="hidden">
+      <p id="login-title">ログイン</p>
+      <p class="login-subtitle" id="to-pc">このサイトを利用するには、ログインが必要です。</p>
+      <p class="login-subtitle" id="to-sp">このサイトを利用するには、<br>ログインが必要です。</p>
+      
+      <div id="login-input">
+        <input type="email" id="mail-address" placeholder="メールアドレス">
+        <input type="password" id="password" placeholder="パスワード">
+        <a href="#" id="forgot-password-link">パスワードを忘れた場合</a>
+        
+        <button type="submit" id="login-button" disabled="true">ログイン</button>
+        <p id="error-message"></p>
+      </div>
+    </div>
+    <div id="setting-container" class="hidden">
+      <p id="setting-title">アカウント設定</p>
+      <div id="setting-content">
+        <div id="setting-status">
+          <p>メールアドレス: <span id="setting-email">取得中...</span></p>
+          <p>ユーザーネーム: <span id="setting-username">取得中...</span></p>
+          <p>ユーザー識別子: <span id="setting-uid">取得中...</span></p>
+          <p class="mini-text">ユーザー識別子は、ユーザー個別の対応の際に使用します。<br>他人に教えないでください。</p>
+        
+        </div>
+        <button id="change-username">ユーザーネームを変更</button>
+        <button id="change-password">パスワードを変更</button>
+        <!--
+        <div class="setting-section">
+          <p class="title">ユーザーネーム</p>
+          <div>
+            <input type="text" id="" placeholder="新しい名前">
+            <button>変更</button>
+          </div>
+        </div>
+        <div class="setting-section">
+          <p class="title">パスワード</p>
+          <input type="password">
+        </div>-->
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+  </footer>
+    
+  <script type="module" src="script.js"></script>
+</html>
