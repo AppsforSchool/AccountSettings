@@ -27,18 +27,6 @@ const q = query(
   orderBy("created_at", "desc"),
   limit(5)
 );
-/*getDocs(q).then((snapshot) => {
-  listContainer.innerHTML = '';
-  snapshot.forEach((doc) => {
-    const data = doc.data();
-    const listItem = document.createElement('li');
-    const date = data.created_at.toDate().toLocaleDateString('ja-JP');
-    // リンク先は news.html 経由ではなく、newsDetail.html に直接ハッシュ付きで飛ばす
-    listItem.innerHTML = `<p>${date} <a href="newsDetail.html#${doc.id}"> ${data.title}</a></p>`;
-    listContainer.appendChild(listItem);
-  });
-});*/
-loadNews(q, listContainer);
 
 async function loadNews(q, listContainer) {
   try {
@@ -108,8 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
   passwordModalConfirm = document.getElementById('password-modal-confirm');
   savePasswordButton = document.getElementById('save-password-button');
   passwordModalMessage = document.getElementById('password-modal-message');
-  
 
+  loadNews(q, listContainer);
   // header login - event listener
   if (logoutButton) logoutButton.addEventListener('click', handleLogout);
   // before login - event listener
