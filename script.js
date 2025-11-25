@@ -1,7 +1,7 @@
 // Firebase SDK のインポート
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, getDocs, setDoc, query, orderBy, limit} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, getDocs, setDoc, query, where, orderBy, limit} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
 // Firebase 設定
 const firebaseConfig = {
@@ -23,8 +23,9 @@ const listContainer = document.getElementById('index-list-container');
 
 const q = query(
   collection(db, "news_AccountSettings"),
+  where("is_active", "==", true),
   orderBy("created_at", "desc"),
-  limit(10)
+  limit(5)
 );
 /*getDocs(q).then((snapshot) => {
   listContainer.innerHTML = '';
