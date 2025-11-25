@@ -1,24 +1,24 @@
 // Firebase SDK のインポート
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, getDocs, setDoc, query, where, orderBy, limit} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import {signInWithEmailAndPassword,
+        onAuthStateChanged,
+        signOut,
+        EmailAuthProvider,
+        reauthenticateWithCredential,
+        updatePassword
+       } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import {doc,
+        getDoc,
+        collection,
+        getDocs,
+        setDoc,
+        query,
+        where,
+        orderBy,
+        limit
+       } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-// Firebase 設定
-const firebaseConfig = {
-  apiKey: "AIzaSyBaVboaz5qf3FnWybRgFmVQ20YHU9cq7T0",
-  authDomain: "appsforschool-study.firebaseapp.com",
-  projectId: "appsforschool-study",
-  storageBucket: "appsforschool-study.firebasestorage.app",
-  messagingSenderId: "740735293440",
-  appId: "1:740735293440:web:39dfc03096bb5816ec60e5"
-};
-
-// Firebase 初期化とサービス取得
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-window.auth = getAuth(app);
-window.db = getFirestore(app);
+const auth = window.auth;
+const db = window.db;
 const listContainer = document.getElementById('index-list-container');
 
 const q = query(
