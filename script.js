@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
   savePasswordButton = document.getElementById('save-password-button');
   passwordModalMessage = document.getElementById('password-modal-message');
 
-  loadNews(q, listContainer);
+  // loadNews(q, listContainer);
   // header login - event listener
   if (logoutButton) logoutButton.addEventListener('click', handleLogout);
   // before login - event listener
