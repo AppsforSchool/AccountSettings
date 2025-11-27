@@ -19,15 +19,14 @@ import {doc,
 
 const auth = window.auth;
 const db = window.db;
+/*
 const listContainer = document.getElementById('index-list-container');
-
 const q = query(
   collection(db, "news_AccountSettings"),
   where("is_active", "==", true),
   orderBy("created_at", "desc"),
   limit(5)
 );
-
 async function loadNews(q, listContainer) {
   try {
     // getDocsの前に await を付けて、結果が返ってくるまで待機
@@ -55,7 +54,7 @@ async function loadNews(q, listContainer) {
     listContainer.innerHTML = '<li>お知らせの読み込みに失敗しました。時間をおいて再度お試しください。</li>';
   }
 }
-
+*/
 
 let userDataArea, headerUsername, logoutButton;
 let loginContainer, emailInput, passwordInput, loginButton, errorMessage;
