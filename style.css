@@ -193,7 +193,7 @@ body {
 #news-container a:visited {
   color: #a05e2d;
 }
-#index-list-container {
+#news-list-container {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -202,11 +202,21 @@ body {
   flex-direction: column;
   text-align: left;
 }
-#index-list-container a {
+#news-list-container a {
   padding-bottom: 0.5rem;
 }
 #news-link {
   padding-top: 1rem;
+}
+
+#loading-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
 #login-container {

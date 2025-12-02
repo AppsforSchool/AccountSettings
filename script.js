@@ -1,33 +1,44 @@
-// Firebase SDK のインポート
-import {signInWithEmailAndPassword,
-        onAuthStateChanged,
-        signOut,
-        EmailAuthProvider,
-        reauthenticateWithCredential,
-        updatePassword
-       } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-import {doc,
-        getDoc,
-        collection,
-        getDocs,
-        setDoc,
-        query,
-        where,
-        orderBy,
-        limit
-       } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
-const auth = window.auth;
-const db = window.db;
-/*
-const listContainer = document.getElementById('index-list-container');
-const q = query(
-  collection(db, "news_AccountSettings"),
-  where("is_active", "==", true),
-  orderBy("created_at", "desc"),
-  limit(5)
-);
-async function loadNews(q, listContainer) {
+// Firebase 設定
+const firebaseConfig = {
+  apiKey: "AIzaSyBaVboaz5qf3FnWybRgFmVQ20YHU9cq7T0",
+  authDomain: "appsforschool-study.firebaseapp.com",
+  projectId: "appsforschool-study",
+  storageBucket: "appsforschool-study.firebasestorage.app",
+  messagingSenderId: "740735293440",
+  appId: "1:740735293440:web:39dfc03096bb5816ec60e5"
+};
+
+// 1. Firebaseアプリの初期化
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+let firestoreFunctionsCache = null;
+let dbCache = null;
+async function getFirestoreAndFunctions(app) {
+  if (dbCache && firestoreFunctionsCache) {
+    return { 
+      db: dbCache, 
+      ...firestoreFunctionsCache 
+    };
+  }
+  // Firestoreモジュールを動的にインポート
+  const firestoreFunctions = await import(
+    "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js"
+  );
+  const db = firestoreFunctions.getFirestore(app);
+  // 結果をキャッシュに保存
+  dbCache = db;
+  firestoreFunctionsCache = firestoreFunctions; 
+  return { 
+    db: db, 
+    ...firestoreFunctions 
+  };
+}
+
+async function loadNews(q, listContainer, getDocs) {
   try {
     // getDocsの前に await を付けて、結果が返ってくるまで待機
     const snapshot = await getDocs(q);
@@ -45,18 +56,21 @@ async function loadNews(q, listContainer) {
       // created_atがtimestamp型で、かつ存在する場合のみtoDate()を呼び出す
       const date = data.created_at ? data.created_at.toDate().toLocaleDateString('ja-JP') : '日付不明';
       // リンク先は newsDetail.html にドキュメントIDをハッシュとして付与
-      listItem.innerHTML = `<p>${date} <a href="news_detail.html#${doc.id}">${data.title}</a></p>`;
+      listItem.innerHTML = `<p>${date} <a href="newsDetail.html#${doc.id}">${data.title}</a></p>`;
       listContainer.appendChild(listItem);
     });
   } catch (error) {
     // エラーが発生した場合、ここで捕捉してコンソールに出力し、ユーザーに通知
     console.error("Firestoreからのお知らせ取得エラー:", error);
-    listContainer.innerHTML = '<li>お知らせの読み込みに失敗しました。時間をおいて再度お試しください。</li>';
+    listContainer.innerHTML = `<li>お知らせの読み込みに失敗しました。時間をおいて再度お試しください。<br>${error}</li>`;
+    //listContainer.innerHTML = `<p>${error}</p>`;
   }
 }
-*/
+
 
 let userDataArea, headerUsername, logoutButton;
+let newsListContainer;
+let loadingContainer;
 let loginContainer, emailInput, passwordInput, loginButton, errorMessage;
 let settingContainer, settingUserEmail, settingUsername, settingUserUID, changeUsernameButton, changePasswordButton;
 let usernameModal, usernameModalClose, usernameModalInput, saveUsernameButton, usernameModalMessage;
@@ -67,6 +81,10 @@ document.addEventListener('DOMContentLoaded', () => {
   userDataArea = document.getElementById('user-data');
   headerUsername = document.getElementById('header-username');
   logoutButton = document.getElementById('header-logout');
+  //
+  newsListContainer = document.getElementById('news-list-container');
+  //
+  loadingContainer = document.getElementById('loading-container');
   // before login - DOM
   loginContainer = document.getElementById('login-container');
   emailInput = document.getElementById('mail-address');
@@ -120,6 +138,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
 
   onAuthStateChanged(auth, async (user) => {
+    // console.log(window.location.href);
+    loadingContainer.classList.add('hidden');
+    const { db, doc, getDoc, collection, where, orderBy, limit, query, getDocs } = await getFirestoreAndFunctions(app);
     if (user) {
       if (emailInput) emailInput.value = '';
       if (passwordInput) passwordInput.value = '';
@@ -139,8 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (profileData.username) {
           username = profileData.username;
         }
-      } else {
-        
       }
       if (headerUsername) headerUsername.textContent = username;
       if (settingUserEmail) settingUserEmail.textContent = user.email;
@@ -152,6 +171,13 @@ document.addEventListener('DOMContentLoaded', () => {
       userDataArea.classList.add('hidden');
       loginContainer.classList.remove('hidden');
     }
+    const q = query(
+      collection(db, "news_AccountSettings"),
+      where("is_active", "==", true),
+      orderBy("created_at", "desc"),
+      limit(5)
+    );
+    loadNews(q, newsListContainer, getDocs);
   });
 });
 
@@ -182,6 +208,7 @@ function updateSaveUsernameButtonState() {
   }
 }
 const handleChangeUsername = async () => {
+  const { db, doc, setDoc } = await getFirestoreAndFunctions();
   const newUsername = usernameModalInput.value.trim();
   usernameModalMessage.textContent = ''; // メッセージをクリア
 
@@ -213,16 +240,16 @@ const handleChangeUsername = async () => {
     if (headerUsername) headerUsername.textContent = newUsername;
     if (settingUsername) settingUsername.textContent = newUsername;
 
-    } catch (error) {
-      console.error("ユーザーネーム変更エラー:", error);
-      usernameModalMessage.style.color = 'red';
-      usernameModalMessage.textContent = 'ユーザーネームの変更に失敗しました。' + error.message;
-      saveUsernameButton.disabled = false;
-    } finally {
-      if (saveUsernameButton) {
-        saveUsernameButton.textContent = '名前を変更';
-      }
+  } catch (error) {
+    console.error("ユーザーネーム変更エラー:", error);
+    usernameModalMessage.style.color = 'red';
+    usernameModalMessage.textContent = 'ユーザーネームの変更に失敗しました。' + error.message;
+    saveUsernameButton.disabled = false;
+  } finally {
+    if (saveUsernameButton) {
+      saveUsernameButton.textContent = '名前を変更';
     }
+  }
 };
 
 function openPasswordModal() {
@@ -235,7 +262,7 @@ function closePasswordModal() {
   if (passwordModalMessage) passwordModalMessage.textContent = '';
 }
 function updateSavePasswordButtonState() {
-  console.log('a');
+  console.log(window.location.href);
   if (savePasswordButton) {
     const hasPasswordCurrent = passwordModalCurrent && passwordModalCurrent.value.trim() !== '';
     const hasPasswordNew = passwordModalNew && passwordModalNew.value.trim() !== '';
@@ -244,71 +271,72 @@ function updateSavePasswordButtonState() {
   }
 }
 const handleChangePassword = async () => {
-    const currentPassword = passwordModalCurrent.value;
-    const newPassword = passwordModalNew.value;
-    const confirmNewPassword = passwordModalConfirm.value;
-    passwordModalMessage.textContent = '';
+  const { EmailAuthProvider, reauthenticateWithCredential, updatePassword } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js");
+  const currentPassword = passwordModalCurrent.value;
+  const newPassword = passwordModalNew.value;
+  const confirmNewPassword = passwordModalConfirm.value;
+  passwordModalMessage.textContent = '';
 
-    if (newPassword !== confirmNewPassword) {
-        passwordModalMessage.textContent = '新しいパスワードが一致しません。';
-        return;
-    }
-    if (newPassword.length < 6) {
-        passwordModalMessage.textContent = '新しいパスワードは6文字以上である必要があります。';
-        return;
-    }
-    if (currentPassword === newPassword) {
-        passwordModalMessage.textContent = '現在のパスワードと同じパスワードは設定できません。';
-        return;
-    }
+  if (newPassword !== confirmNewPassword) {
+    passwordModalMessage.textContent = '新しいパスワードが一致しません。';
+    return;
+  }
+  if (newPassword.length < 6) {
+    passwordModalMessage.textContent = '新しいパスワードは6文字以上である必要があります。';
+    return;
+  }
+  if (currentPassword === newPassword) {
+    passwordModalMessage.textContent = '現在のパスワードと同じパスワードは設定できません。';
+    return;
+  }
 
+  if (savePasswordButton) {
+      savePasswordButton.disabled = true;
+      savePasswordButton.textContent = '変更中...';
+  }
+
+  try {
+    const user = auth.currentUser;
+    const credential = EmailAuthProvider.credential(
+      user.email, // auth.currentUser.email ではなく user.email を使用
+      currentPassword
+    );
+    // ここを修正: reauthenticateWithCredential(user, credential) 関数として呼び出す
+    await reauthenticateWithCredential(user, credential);
+    // ここを修正: updatePassword(user, newPassword) 関数として呼び出す
+    await updatePassword(user, newPassword);
+
+    passwordModalMessage.style.color = '#09a318';
+    passwordModalMessage.textContent = 'パスワードが正常に変更されました！';
+    passwordModalCurrent.value = '';
+    passwordModalNew.value = '';
+    passwordModalConfirm.value = '';
+    savePasswordButton.disabled = true;
+  } catch (error) {
+    savePasswordButton.disabled = true;
+    console.error("パスワード変更エラー:", error);
+    passwordModalMessage.style.color = 'red';
+    if (error.code === 'auth/wrong-password') {
+      passwordModalMessage.textContent = '現在のパスワードが間違っています。';
+    } else if (error.code === 'auth/invalid-credential') {
+      passwordModalMessage.textContent = '提供された認証情報が無効です。パスワードを確認してください。';
+    } else if (error.code === 'auth/requires-recent-login') {
+      passwordModalMessage.textContent = 'セキュリティのため、もう一度ログインし直してからパスワードを変更してください。';
+      await signOut(auth);
+    } else {
+      passwordModalMessage.textContent = 'パスワードの変更に失敗しました。' + error.message;
+    }
+  } finally {
     if (savePasswordButton) {
-        savePasswordButton.disabled = true;
-        savePasswordButton.textContent = '変更中...';
+      savePasswordButton.textContent = 'パスワードを変更';
     }
-
-    try {
-      const user = auth.currentUser;
-      const credential = EmailAuthProvider.credential(
-        user.email, // auth.currentUser.email ではなく user.email を使用
-        currentPassword
-      );
-      // ここを修正: reauthenticateWithCredential(user, credential) 関数として呼び出す
-      await reauthenticateWithCredential(user, credential);
-      // ここを修正: updatePassword(user, newPassword) 関数として呼び出す
-      await updatePassword(user, newPassword);
-
-      passwordModalMessage.style.color = '#09a318';
-      passwordModalMessage.textContent = 'パスワードが正常に変更されました！';
-      passwordModalCurrent.value = '';
-      passwordModalNew.value = '';
-      passwordModalConfirm.value = '';
-      savePasswordButton.disabled = true;
-
-    } catch (error) {
-      savePasswordButton.disabled = true;
-      console.error("パスワード変更エラー:", error);
-      passwordModalMessage.style.color = 'red';
-      if (error.code === 'auth/wrong-password') {
-        passwordModalMessage.textContent = '現在のパスワードが間違っています。';
-      } else if (error.code === 'auth/invalid-credential') {
-        passwordModalMessage.textContent = '提供された認証情報が無効です。パスワードを確認してください。';
-      } else if (error.code === 'auth/requires-recent-login') {
-        passwordModalMessage.textContent = 'セキュリティのため、もう一度ログインし直してからパスワードを変更してください。';
-        await signOut(auth);
-      } else {
-        passwordModalMessage.textContent = 'パスワードの変更に失敗しました。' + error.message;
-      }
-    } finally {
-      if (savePasswordButton) {
-        savePasswordButton.textContent = 'パスワードを変更';
-      }
-    }
+  }
 };
 
 
 // ログイン処理
 const handleLogin = async () => {
+  const { signInWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js");
   errorMessage.textContent = ''; // エラーメッセージをクリア
   loginButton.disabled = true; // ボタンを無効化
   loginButton.textContent = 'ログイン中...'; // テキストで処理中であることを表示
@@ -325,6 +353,7 @@ const handleLogin = async () => {
 };
 // ログアウト処理
 const handleLogout = async () => {
+  const { signOut } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js");
   const isConfirmed = confirm('ログアウトしますか？');
   if (isConfirmed) {
     try {
