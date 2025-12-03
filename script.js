@@ -38,7 +38,7 @@ async function getFirestoreAndFunctions(app) {
   };
 }
 
-async function loadNews(q, listContainer, getDocs) {
+async function loadNews(q, listContainer, getDocs, isAdmin) {
   try {
     // getDocsの前に await を付けて、結果が返ってくるまで待機
     const snapshot = await getDocs(q);
@@ -49,14 +49,21 @@ async function loadNews(q, listContainer, getDocs) {
       listContainer.innerHTML = '<li>現在、お知らせはありません。</li>';
       return;
     }
-
+    const dateFormatter = new Intl.DateTimeFormat('ja-JP', {
+      year: 'numeric',
+      month: '2-digit', // 月を必ず2桁に
+      day: '2-digit',   // 日を必ず2桁に
+    });
     snapshot.forEach((doc) => {
       const data = doc.data();
       const listItem = document.createElement('li');
       // created_atがtimestamp型で、かつ存在する場合のみtoDate()を呼び出す
-      const date = data.created_at ? data.created_at.toDate().toLocaleDateString('ja-JP') : '日付不明';
+      const date = data.created_at ? dateFormatter.format(data.created_at.toDate()) : '????/??/??';
       // リンク先は newsDetail.html にドキュメントIDをハッシュとして付与
       listItem.innerHTML = `<p>${date} <a href="newsDetail.html#${doc.id}">${data.title}</a></p>`;
+      if (isAdmin && !data.is_active) {
+        listItem.innerHTML = `<p>${date} <a href="newsDetail.html#${doc.id}">${data.title}</a> [非公開]</p>`;
+      }
       listContainer.appendChild(listItem);
     });
   } catch (error) {
@@ -135,50 +142,64 @@ document.addEventListener('DOMContentLoaded', () => {
   if (passwordModalNew) passwordModalNew.addEventListener('input', updateSavePasswordButtonState);
   if (passwordModalConfirm) passwordModalConfirm.addEventListener('input', updateSavePasswordButtonState);
   if (savePasswordButton) savePasswordButton.addEventListener('click', handleChangePassword);
-  
+});
 
-  onAuthStateChanged(auth, async (user) => {
-    // console.log(window.location.href);
-    loadingContainer.classList.add('hidden');
-    const { db, doc, getDoc, collection, where, orderBy, limit, query, getDocs } = await getFirestoreAndFunctions(app);
-    if (user) {
-      if (emailInput) emailInput.value = '';
-      if (passwordInput) passwordInput.value = '';
-      // ログインボタンを無効化
-      loginButton.disabled = true;
-      loginButton.textContent = 'ログイン';
+onAuthStateChanged(auth, async (user) => {
+  // console.log(window.location.href);
+  loadingContainer.classList.add('hidden');
+  const { db, doc, getDoc, collection, where, orderBy, limit, query, getDocs } = await getFirestoreAndFunctions(app);
+  let isAdmin = false;
+  if (user) {
+    if (emailInput) emailInput.value = '';
+    if (passwordInput) passwordInput.value = '';
+    // ログインボタンを無効化
+    loginButton.disabled = true;
+    loginButton.textContent = 'ログイン';
       
-      loginContainer.classList.add('hidden');
-      userDataArea.classList.remove('hidden');
-      settingContainer.classList.remove('hidden');
+    loginContainer.classList.add('hidden');
+    userDataArea.classList.remove('hidden');
+    settingContainer.classList.remove('hidden');
       
-      const userProfileRef = doc(db, 'users', user.uid);
-      const userProfileSnap = await getDoc(userProfileRef);
-      let username = "no-data";
-      if (userProfileSnap.exists()) {
-        const profileData = userProfileSnap.data();
-        if (profileData.username) {
-          username = profileData.username;
-        }
+    const userProfileRef = doc(db, 'users', user.uid);
+    const userProfileSnap = await getDoc(userProfileRef);
+    let username = "no-data";
+    if (userProfileSnap.exists()) {
+      const profileData = userProfileSnap.data();
+      if (profileData.username) {
+        username = profileData.username;
       }
-      if (headerUsername) headerUsername.textContent = username;
-      if (settingUserEmail) settingUserEmail.textContent = user.email;
-      if (settingUsername) settingUsername.textContent = username;
-      if (settingUserUID) settingUserUID.textContent = user.uid;
-      
-    } else {
-      settingContainer.classList.add('hidden');
-      userDataArea.classList.add('hidden');
-      loginContainer.classList.remove('hidden');
+      if (profileData.isAdmin) {
+        isAdmin = profileData.isAdmin || false;
+      }
     }
-    const q = query(
-      collection(db, "news_AccountSettings"),
+    if (headerUsername) headerUsername.textContent = username;
+    if (headerUsername && isAdmin) headerUsername.textContent = `[管理者]${username}`;
+    if (settingUserEmail) settingUserEmail.textContent = user.email;
+    if (settingUsername) settingUsername.textContent = username;
+    if (settingUsername && isAdmin) settingUsername.textContent = `[管理者]${username}`;
+    if (settingUserUID) settingUserUID.textContent = user.uid;
+      
+  } else {
+    settingContainer.classList.add('hidden');
+    userDataArea.classList.add('hidden');
+    loginContainer.classList.remove('hidden');
+  }
+  let q;
+  if (isAdmin) {
+    q = query(
+      collection(db, "AccountSettings", "root", "news"),
+      orderBy("created_at", "desc"),
+      limit(5)
+    );
+  } else {
+    q = query(
+      collection(db, "AccountSettings", "root", "news"),
       where("is_active", "==", true),
       orderBy("created_at", "desc"),
       limit(5)
     );
-    loadNews(q, newsListContainer, getDocs);
-  });
+  }
+  loadNews(q, newsListContainer, getDocs, isAdmin);
 });
 
 function updateLoginButtonState() {
